@@ -1,0 +1,26 @@
+{
+  "name": "foot-ai-news",
+  "version": "1.0.0",
+  "description": "Plateforme d'actualités football en temps réel avec génération de publications par IA",
+  "main": "index.html",
+  "scripts": {
+    "dev": "netlify dev",
+    "build": "echo 'FOOT AI NEWS is ready'",
+    "start": "echo 'Deploy to Netlify'"
+  },
+  "keywords": [
+    "football",
+    "actualites",
+    "ia",
+    "facebook",
+    "publications"
+  ],
+  "author": "Marouane",
+  "license": "MIT",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.24.0"
+  },
+  "devDependencies": {
+    "netlify-cli": "^17.0.0"
+  }
+}
