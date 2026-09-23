@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>FOOT AI NEWS - Actualités Football IA</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%);
+      color: #fff;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      line-height: 1.6;
+    }
+
+    .navbar {
+      background: #1a1f2e;
+      border-bottom: 1px solid #2a3040;
+      padding: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .navbar h1 {
+      font-size: 18px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .logo {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, #ff4757 0%, #ff6b7a 100%);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid #2a3040;
+      background: #1a1f2e;
+      position: sticky;
+      top: 56px;
+      z-index: 99;
+      overflow-x: auto;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 1rem;
+      text-align: center;
+      border-bottom: 3px solid transparent;
+      cursor: pointer;
+      font-size: 13px;
+      color: #999;
+      transition: all 0.2s;
+      white-space: nowrap;
+      min-width: 100px;
+    }
+
+    .tab:hover {
+      color: #ddd;
+    }
+
+    .tab.active {
+      border-bottom-color: #ff4757;
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .content {
+      padding: 1rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .tab-content {
+      animation: fadeIn 0.2s;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .match-card {
+      background: #252d3d;
+      border: 1px solid #3a4050;
+      border-radius: 12px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      transition: all 0.2s;
+    }
+
+    .match-card:hover {
+      border-color: #ff4757;
+      box-shadow: 0 4px 12px rgba(255, 71, 87, 0.1);
+    }
+
+    .match-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+
+    .match-time {
+      font-size: 11px;
+      color: #999;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .match-score {
+      font-size: 20px;
+      font-weight: 700;
+      text-align: center;
+      background: linear-gradient(135deg, #ff4757 0%, #ff6b7a 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .match-status {
+      font-size: 10px;
+      background: #ff4757;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    .teams {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 1rem;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .team {
+      text-align: center;
+    }
+
+    .team-logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3a4050 0%, #4a5060 100%);
+      margin: 0 auto 8px;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #2a3040;
+    }
+
+    .team-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #ddd;
+    }
+
+    .vs-text {
+      font-size: 12px;
+      color: #999;
+      font-weight: 500;
+    }
+
+    .events {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid #3a4050;
+      font-size: 12px;
+    }
+
+    .event {
+      padding: 6px 0;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      color: #ccc;
+    }
+
+    .event-icon {
+      font-size: 16px;
+      min-width: 16px;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 8px;
+      margin-top: 1rem;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #ff4757 0%, #ff6b7a 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(255, 71, 87, 0.2);
+    }
+
+    .btn-primary:active {
+      transform: scale(0.95);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background: #3a4050;
+      color: #fff;
+      border: 1px solid #4a5060;
+    }
+
+    .btn-secondary:active {
+      background: #4a5060;
+    }
+
+    .news-card {
+      background: #252d3d;
+      border: 1px solid #3a4050;
+      border-radius: 12px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .news-title {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: #fff;
+    }
+
+    .news-text {
+      font-size: 12px;
+      line-height: 1.5;
+      color: #bbb;
+      margin-bottom: 0.75rem;
+    }
+
+    .news-source {
+      font-size: 11px;
+      color: #999;
+      margin-bottom: 0.75rem;
+    }
+
+    .publication-box {
+      background: #1a1f2e;
+      border: 1px solid #3a4050;
+      border-radius: 12px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .pub-header {
+      font-size: 11px;
+      color: #999;
+      margin-bottom: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .pub-content {
+      background: #252d3d;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      min-height: 120px;
+    }
+
+    .pub-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #ff4757;
+      margin-bottom: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .pub-text {
+      font-size: 13px;
+      line-height: 1.6;
+      color: #ddd;
+      margin-bottom: 1rem;
+    }
+
+    .pub-hashtags {
+      font-size: 12px;
+      color: #007bff;
+      word-break: break-word;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: #999;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid #3a4050;
+      border-top-color: #ff4757;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 1rem;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .error {
+      background: #8b3a3a;
+      border: 1px solid #a04a4a;
+      color: #ffcccc;
+      padding: 1rem;
+      border-radius: 8px;
+      font-size: 12px;
+      margin-bottom: 1rem;
+    }
+
+    .success {
+      background: #3a8b4a;
+      border: 1px solid #4aa05a;
+      color: #ccffcc;
+      padding: 1rem;
+      border-radius: 8px;
+      font-size: 12px;
+      margin-bottom: 1rem;
+    }
+
+    .switch {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 1rem;
+      background: #252d3d;
+      border: 1px solid #3a4050;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+
+    .toggle {
+      width: 48px;
+      height: 28px;
+      background: #3a4050;
+      border-radius: 14px;
+      position: relative;
+      cursor: pointer;
+      transition: all 0.3s;
+      flex-shrink: 0;
+    }
+
+    .toggle.active {
+      background: linear-gradient(135deg, #ff4757 0%, #ff6b7a 100%);
+    }
+
+    .toggle-dot {
+      width: 24px;
+      height: 24px;
+      background: white;
+      border-radius: 50%;
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      transition: all 0.3s;
+    }
+
+    .toggle.active .toggle-dot {
+      left: 22px;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 1rem;
+    }
+
+    .stat-box {
+      background: #252d3d;
+      border: 1px solid #3a4050;
+      border-radius: 8px;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 22px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #ff4757 0%, #ff6b7a 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: #999;
+      margin-top: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .filter-group {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .filter-btn {
+      background: #3a4050;
+      color: #fff;
+      border: 1px solid #4a5060;
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+      font-weight: 600;
+    }
+
+    .filter-btn.active {
+      background: linear-gradient(135deg, #ff4757 0%, #ff6b7a 100%);
+      border-color: #ff4757;
+    }
+
+    .filter-btn:active {
+      transform: scale(0.95);
+    }
+
+    h2 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: #fff;
+    }
+
+    h3 {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: #fff;
+    }
+
+    .section-divider {
+      border-top: 1px solid #3a4050;
+      margin: 2rem 0 1rem;
+      padding-top: 1rem;
+    }
+
+    .connected-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #00d084;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .connected-badge::before {
+      content: "✓";
+      font-weight: 700;
+    }
+
+    @media (max-width: 480px) {
+      .content {
+        padding: 0.75rem;
+      }
+
+      .tab {
+        font-size: 12px;
+        padding: 0.75rem;
+      }
+
+      .btn {
+        padding: 10px;
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <div class="logo">⚽</div>
+    <h1>FOOT AI NEWS</h1>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab(event, 'live')">🔴 EN DIRECT</div>
+    <div class="tab" onclick="switchTab(event, 'news')">📰 ACTUALITÉS</div>
+    <div class="tab" onclick="switchTab(event, 'ai')">🤖 PUBLICATIONS</div>
+    <div class="tab" onclick="switchTab(event, 'settings')">⚙️ PARAMÈTRES</div>
+  </div>
+
+  <div class="content">
+    <!-- LIVE MATCHES TAB -->
+    <div id="live" class="tab-content">
+      <h2>Matchs en direct</h2>
+
+      <div class="match-card">
+        <div class="match-header">
+          <div class="match-time">26e minute</div>
+          <div class="match-status">EN DIRECT</div>
+        </div>
+        <div class="match-score">2 - 1</div>
+        
+        <div class="teams">
+          <div class="team">
+            <div class="team-logo">👑</div>
+            <div class="team-name">Real Madrid</div>
+          </div>
+          <div class="vs-text">vs</div>
+          <div class="team">
+            <div class="team-logo">🔵</div>
+            <div class="team-name">Barcelona</div>
+          </div>
+        </div>
+
+        <div class="events">
+          <div class="event"><span class="event-icon">⚽</span> <span>8' - Mbappé (Real)</span></div>
+          <div class="event"><span class="event-icon">⚽</span> <span>18' - Lewandowski (Barcelona)</span></div>
+          <div class="event"><span class="event-icon">⚽</span> <span>22' - Rodrygo (Real)</span></div>
+          <div class="event"><span class="event-icon">🟨</span> <span>24' - Carton jaune (Gavi)</span></div>
+        </div>
+
+        <div class="button-group">
+          <button class="btn btn-primary" onclick="generatePost('Real Madrid vs Barcelona - 2-1 en direct avec Mbappé auteur de 2 buts')">Générer pub</button>
+          <button class="btn btn-secondary" onclick="alert('Programmation disponible bientôt')">Programmer</button>
+        </div>
+      </div>
+
+      <div class="match-card">
+        <div class="match-header">
+          <div class="match-time">45e minute</div>
+          <div class="match-status">MI-TEMPS</div>
+        </div>
+        <div class="match-score">1 - 1</div>
+        
+        <div class="teams">
+          <div class="team">
+            <div class="team-logo">👾</div>
+            <div class="team-name">Manchester City</div>
+          </div>
+          <div class="vs-text">vs</div>
+          <div class="team">
+            <div class="team-logo">🔴</div>
+            <div class="team-name">Liverpool</div>
+          </div>
+        </div>
+
+        <div class="events">
+          <div class="event"><span class="event-icon">⚽</span> <span>12' - Haaland (Man City)</span></div>
+          <div class="event"><span class="event-icon">⚽</span> <span>38' - Salah (Liverpool)</span></div>
+          <div class="event"><span class="event-icon">🔄</span> <span>42' - Remplacement (Man City)</span></div>
+        </div>
+
+        <div class="button-group">
+          <button class="btn btn-primary" onclick="generatePost('Manchester City vs Liverpool - Match égalisé 1-1 avec Haaland et Salah buteurs')">Générer pub</button>
+          <button class="btn btn-secondary" onclick="alert('Programmation disponible bientôt')">Programmer</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- NEWS TAB -->
+    <div id="news" class="tab-content" style="display: none;">
+      <h2>Dernières actualités</h2>
+
+      <div class="filter-group">
+        <div class="filter-btn active">Tous</div>
+        <div class="filter-btn">Transferts</div>
+        <div class="filter-btn">Blessures</div>
+        <div class="filter-btn">Officiels</div>
+      </div>
+
+      <div class="news-card">
+        <div class="news-title">🔥 Mbappé débute en fête</div>
+        <div class="news-text">Kylian Mbappé a inscrit deux buts dès le début du Clasico Real Madrid - Barcelona, confirmant son excellente forme en La Liga.</div>
+        <div class="news-source">📍 ESPN • Il y a 12 min</div>
+        <div class="button-group">
+          <button class="btn btn-primary" onclick="generatePost('Mbappé brille au Clasico avec un doublé spectaculaire face à Barcelone')">Créer pub</button>
+        </div>
+      </div>
+
+      <div class="news-card">
+        <div class="news-title">✅ Haaland prolonge à Manchester City</div>
+        <div class="news-text">L'attaquant norvégien a signé un nouveau contrat jusqu'en 2028. Une prolongation majeure pour les Skyblues.</div>
+        <div class="news-source">📍 Sky Sports • Il y a 45 min</div>
+        <div class="button-group">
+          <button class="btn btn-primary" onclick="generatePost('Transfert officiel - Erling Haaland prolonge son contrat avec Manchester City jusqu\'en 2028')">Créer pub</button>
+        </div>
+      </div>
+
+      <div class="news-card">
+        <div class="news-title">💪 Benzema de retour bientôt</div>
+        <div class="news-text">Après une blessure musculaire, la légende du Real Madrid sera de retour pour le prochain match de Liga.</div>
+        <div class="news-source">📍 Marca • Il y a 2h</div>
+        <div class="button-group">
+          <button class="btn btn-primary" onclick="generatePost('Benzema annonce son retour imminent après une blessure de 3 semaines')">Créer pub</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI PUBLICATIONS TAB -->
+    <div id="ai" class="tab-content" style="display: none;">
+      <h2>Publications générées par l'IA</h2>
+
+      <div id="publication-result" class="publication-box">
+        <div class="pub-header">BROUILLON - PRÊT À PUBLIER</div>
+        <div class="pub-content">
+          <div id="ai-output" style="color: #999; text-align: center; padding: 2rem 0;">
+            Générez une publication en cliquant sur "Générer pub" depuis les matchs ou actualités.
+          </div>
+        </div>
+        <div class="button-group">
+          <button class="btn btn-primary" id="publish-btn" onclick="publishToFacebook()" style="display: none;">Publier sur Facebook</button>
+          <button class="btn btn-secondary" onclick="copyToClipboard()">Copier le texte</button>
+        </div>
+      </div>
+
+      <div class="publication-box">
+        <div class="pub-header">✓ PUBLIÉE • IL Y A 5 MIN • 2.4K RÉACTIONS</div>
+        <div class="pub-content">
+          <div class="pub-title">⚽ DOUBLE POUR RODRYGO !</div>
+          <div class="pub-text">
+            22' — Rodrygo renforce l'avance du Real Madrid ! 💪<br><br>
+            Real Madrid 2️⃣–0️⃣ Barcelona<br><br>
+            Los Blancos dominent ce Clasico historique ! ⚪👑
+          </div>
+          <div class="pub-hashtags">#RealMadrid #Rodrygo #LaLiga #Football</div>
+        </div>
+      </div>
+
+      <div class="publication-box">
+        <div class="pub-header">✓ PUBLIÉE • IL Y A 15 MIN • 5.2K RÉACTIONS</div>
+        <div class="pub-content">
+          <div class="pub-title">🏆 MBAPPÉ DÉBUTE EN FÊTE !</div>
+          <div class="pub-text">
+            8' — Kylian Mbappé ouvre le score dès le début du match !<br><br>
+            Real Madrid 1️⃣–0️⃣ Barcelona<br><br>
+            Un Clasico promis à être légendaire ! 🔥
+          </div>
+          <div class="pub-hashtags">#Clasico #RealMadrid #Barcelona #Mbappé</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SETTINGS TAB -->
+    <div id="settings" class="tab-content" style="display: none;">
+      <h2>Paramètres</h2>
+
+      <h3>Automatisation</h3>
+
+      <div class="switch">
+        <div style="flex: 1;">
+          <div style="font-size: 13px; font-weight: 600;">Publier les buts</div>
+          <div style="font-size: 11px; color: #999; margin-top: 4px;">Génère une publication automatique</div>
+        </div>
+        <div class="toggle active" onclick="toggleSwitch(this)">
+          <div class="toggle-dot"></div>
+        </div>
+      </div>
+
+      <div class="switch">
+        <div style="flex: 1;">
+          <div style="font-size: 13px; font-weight: 600;">Publier les cartons</div>
+          <div style="font-size: 11px; color: #999; margin-top: 4px;">Jaunes et rouges pendant les matchs</div>
+        </div>
+        <div class="toggle" onclick="toggleSwitch(this)">
+          <div class="toggle-dot"></div>
+        </div>
+      </div>
+
+      <div class="switch">
+        <div style="flex: 1;">
+          <div style="font-size: 13px; font-weight: 600;">Publier les actualités</div>
+          <div style="font-size: 11px; color: #999; margin-top: 4px;">Transferts, blessures, officiels</div>
+        </div>
+        <div class="toggle active" onclick="toggleSwitch(this)">
+          <div class="toggle-dot"></div>
+        </div>
+      </div>
+
+      <div class="section-divider"></div>
+      <h3>Équipes favorites</h3>
+
+      <div class="stat-grid" style="gap: 8px;">
+        <button class="btn btn-secondary" style="font-size: 12px;">Real Madrid ✕</button>
+        <button class="btn btn-secondary" style="font-size: 12px;">Barcelona ✕</button>
+        <button class="btn btn-secondary" style="font-size: 12px;">Man City ✕</button>
+        <button class="btn btn-secondary" style="font-size: 12px;" onclick="alert('Ajouter une équipe favorite')">+ Ajouter</button>
+      </div>
+
+      <div class="section-divider"></div>
+      <h3>Compte Facebook</h3>
+
+      <div class="news-card">
+        <div class="connected-badge">Connecté</div>
+        <div style="font-size: 12px; color: #999; margin-bottom: 1rem;">
+          Page : FOOT AI NEWS Official<br>
+          Abonnés : 23.1K
+        </div>
+        <div class="button-group">
+          <button class="btn btn-secondary" onclick="alert('Reconnexion Facebook')">Reconnecter</button>
+        </div>
+      </div>
+
+      <div class="section-divider"></div>
+      <h3>Statistiques</h3>
+
+      <div class="stat-grid">
+        <div class="stat-box">
+          <div class="stat-number">47</div>
+          <div class="stat-label">Publications</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-number">12.4K</div>
+          <div class="stat-label">Réactions</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-number">890</div>
+          <div class="stat-label">Partages</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-number">23.1K</div>
+          <div class="stat-label">Abonnés</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function switchTab(e, tabName) {
+      document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+      document.getElementById(tabName).style.display = 'block';
+      document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+      e.target.classList.add('active');
+    }
+
+    function toggleSwitch(el) {
+      el.classList.toggle('active');
+    }
+
+    async function generatePost(topic) {
+      const aiTab = document.querySelector('.tab[onclick*="ai"]');
+      aiTab.click();
+
+      const output = document.getElementById('ai-output');
+      const publishBtn = document.getElementById('publish-btn');
+      
+      output.innerHTML = '<div class="spinner"></div><div>Génération en cours...</div>';
+      output.style.color = '#999';
+      output.style.textAlign = 'center';
+      publishBtn.style.display = 'none';
+
+      try {
+        const response = await fetch('/.netlify/functions/generate-publication', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ topic })
+        });
+
+        if (!response.ok) {
+          throw new Error(`Erreur HTTP: ${response.status}`);
+        }
+
+        const data = await response.json();
+        
+        output.innerHTML = `
+          <div class="pub-title">⚽ PUBLICATION GÉNÉRÉE</div>
+          <div class="pub-text">${data.publication}</div>
+          <div class="pub-hashtags">#Football #LiveScore #MatchDay</div>
+        `;
+        output.style.color = '#ddd';
+        output.style.textAlign = 'left';
+        publishBtn.style.display = 'block';
+
+      } catch (error) {
+        output.innerHTML = `
+          <div style="color: #ffcccc;">
+            ❌ <strong>Erreur de génération</strong><br><br>
+            ${error.message}<br><br>
+            <small>Vérifiez que votre clé API Claude est configurée dans Netlify</small>
+          </div>
+        `;
+        output.style.color = '#ffcccc';
+        publishBtn.style.display = 'none';
+      }
+    }
+
+    function publishToFacebook() {
+      const content = document.getElementById('ai-output').innerText;
+      alert('Publication envoyée à Facebook !\n\n' + content.substring(0, 100) + '...');
+    }
+
+    function copyToClipboard() {
+      const content = document.getElementById('ai-output').innerText;
+      navigator.clipboard.writeText(content).then(() => {
+        alert('Texte copié dans le presse-papiers !');
+      });
+    }
+  </script>
+</body>
+</html>

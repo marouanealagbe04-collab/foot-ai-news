@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FOOT AI NEWS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0A0E14;
+    --surface: #121826;
+    --surface-2: #1A2233;
+    --border: #232D40;
+    --text: #E8ECF1;
+    --muted: #7C8899;
+    --live: #FF4B3E;
+    --live-dim: #4A1F1C;
+    --confirm: #00D9A3;
+    --confirm-dim: #0E3B32;
+    --warn: #F2B84B;
+    --font-display: 'Barlow Condensed', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+  ::-webkit-scrollbar { height: 6px; width: 6px; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  /* HEADER */
+  header {
+    position: sticky; top: env(safe-area-inset-top, 0px); z-index: 40;
+    background: rgba(10,14,20,0.92);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 20px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .logo { display: flex; align-items: center; gap: 8px; }
+  .logo-mark {
+    width: 30px; height: 30px; border-radius: 6px;
+    background: linear-gradient(145deg, var(--live), #C4271C);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display); font-weight: 800; font-size: 16px; color: #fff;
+  }
+  .logo-text { font-family: var(--font-display); font-weight: 700; font-size: 19px; letter-spacing: 0.3px; }
+  .logo-text span { color: var(--live); }
+  nav.desktop-nav { display: none; gap: 24px; font-size: 14px; color: var(--muted); }
+  .header-actions { display: flex; gap: 10px; align-items: center; }
+  .btn {
+    font-family: var(--font-body); font-weight: 600; font-size: 13px;
+    padding: 8px 14px; border-radius: 8px; border: 1px solid var(--border);
+    background: var(--surface); color: var(--text); cursor: pointer;
+  }
+  .btn.primary { background: var(--live); border-color: var(--live); color: #fff; }
+  .btn.ghost { background: transparent; }
+
+  main { max-width: 1180px; margin: 0 auto; padding: 20px 16px 100px; }
+
+  /* LIVE TICKER STRIP */
+  .live-strip-head { display: flex; align-items: center; gap: 8px; margin: 4px 0 12px; }
+  .live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--live); animation: pulse 1.6s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.35} }
+  .live-strip-head h2 { font-family: var(--font-display); font-weight: 700; font-size: 20px; margin: 0; letter-spacing: 0.2px; }
+
+  .live-scroll { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 28px; }
+  .match-card {
+    min-width: 250px; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px; flex-shrink: 0;
+  }
+  .match-card .comp { font-size: 11px; color: var(--muted); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+  .match-card .live-badge {
+    background: var(--live-dim); color: var(--live); font-family: var(--font-mono);
+    font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 4px;
+  }
+  .team-row { display: flex; justify-content: space-between; align-items: center; margin: 6px 0; }
+  .team-row .team { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 500; }
+  .crest { width: 22px; height: 22px; border-radius: 50%; background: var(--surface-2); display:flex; align-items:center; justify-content:center; font-size: 10px; font-weight: 700; color: var(--muted); }
+  .score { font-family: var(--font-mono); font-size: 17px; font-weight: 600; }
+  .match-meta { display: flex; justify-content: space-between; margin-top: 10px; font-size: 11px; color: var(--muted); }
+  .match-meta .minute { color: var(--live); font-family: var(--font-mono); }
+  .event-line { margin-top: 8px; font-size: 12px; color: var(--muted); border-top: 1px dashed var(--border); padding-top: 8px; }
+
+  /* SECTION HEADERS */
+  .section-head { display: flex; justify-content: space-between; align-items: baseline; margin: 32px 0 14px; }
+  .section-head h2 { font-family: var(--font-display); font-weight: 700; font-size: 22px; margin: 0; }
+  .section-head .see-all { font-size: 13px; color: var(--muted); }
+
+  .tabs { display: flex; gap: 8px; overflow-x: auto; margin-bottom: 16px; }
+  .tab {
+    font-size: 12.5px; font-weight: 600; padding: 6px 12px; border-radius: 100px;
+    background: var(--surface); border: 1px solid var(--border); color: var(--muted);
+    white-space: nowrap; cursor: pointer;
+  }
+  .tab.active { background: var(--confirm-dim); color: var(--confirm); border-color: var(--confirm); }
+
+  /* NEWS GRID */
+  .news-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
+  .news-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    overflow: hidden; display: flex; gap: 12px; padding: 12px;
+  }
+  .news-thumb {
+    width: 84px; height: 84px; border-radius: 8px; flex-shrink: 0;
+    background: linear-gradient(135deg, var(--surface-2), #0E1420);
+    display: flex; align-items: center; justify-content: center; font-size: 22px;
+  }
+  .news-body { flex: 1; min-width: 0; }
+  .news-cat { font-size: 10.5px; font-weight: 700; color: var(--confirm); text-transform: uppercase; letter-spacing: 0.5px; }
+  .news-title { font-size: 14.5px; font-weight: 600; margin: 4px 0 6px; line-height: 1.3; }
+  .news-foot { font-size: 11.5px; color: var(--muted); display: flex; gap: 8px; align-items: center; }
+  .verif-badge { font-size: 10px; padding: 1px 6px; border-radius: 4px; font-weight: 600; }
+  .verif-confirmed { background: var(--confirm-dim); color: var(--confirm); }
+  .verif-pending { background: #3A2E12; color: var(--warn); }
+
+  /* DASHBOARD */
+  .dash-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; }
+  .stat-card .num { font-family: var(--font-display); font-size: 28px; font-weight: 700; }
+  .stat-card .label { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  .ai-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin-bottom: 20px; }
+  .ai-panel-head { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+  .ai-panel-head .ai-icon { width: 26px; height: 26px; border-radius: 7px; background: var(--confirm-dim); color: var(--confirm); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+  .ai-panel-head h3 { font-size: 15px; margin: 0; font-family: var(--font-display); font-weight: 700; letter-spacing: 0.2px; }
+  .ai-source { font-family: var(--font-mono); font-size: 12px; color: var(--muted); background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px; margin-bottom: 12px; }
+  .ai-output { font-size: 13.5px; line-height: 1.6; background: var(--bg); border-left: 3px solid var(--confirm); border-radius: 6px; padding: 12px 14px; white-space: pre-wrap; }
+  .ai-actions { display: flex; gap: 8px; margin-top: 12px; }
+
+  .queue-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 8px; font-size: 13px; }
+  .queue-status { font-size: 11px; padding: 3px 8px; border-radius: 100px; font-weight: 600; }
+  .status-ready { background: var(--confirm-dim); color: var(--confirm); }
+  .status-wait { background: #3A2E12; color: var(--warn); }
+
+  /* MOBILE NAV */
+  .mobile-nav {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 50;
+    background: rgba(10,14,20,0.96); backdrop-filter: blur(10px);
+    border-top: 1px solid var(--border);
+    display: flex; justify-content: space-around;
+    padding: 8px 4px calc(8px + env(safe-area-inset-bottom, 0px));
+  }
+  .nav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; color: var(--muted); font-size: 10px; background: none; border: none; cursor: pointer; font-family: var(--font-body); }
+  .nav-item.active { color: var(--confirm); }
+  .nav-icon { font-size: 18px; }
+
+  .view { display: none; }
+  .view.active { display: block; }
+
+  @media (min-width: 860px) {
+    nav.desktop-nav { display: flex; }
+    .mobile-nav { display: none; }
+    main { padding-bottom: 40px; }
+    .news-grid { grid-template-columns: 1fr 1fr; }
+    .dash-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --bg: #0A0E14; --surface: #121826; --text: #E8ECF1;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-mark">⚽</div>
+    <div class="logo-text">FOOT AI<span>·</span>NEWS</div>
+  </div>
+  <nav class="desktop-nav">
+    <a onclick="showView('home')">Accueil</a>
+    <a onclick="showView('home')">Live</a>
+    <a onclick="showView('home')">Actualités</a>
+    <a onclick="showView('dashboard')">Tableau de bord</a>
+  </nav>
+  <div class="header-actions">
+    <button class="btn ghost">Connexion</button>
+    <button class="btn primary" onclick="showView('dashboard')">Tableau de bord</button>
+  </div>
+</header>
+
+<main>
+
+  <!-- HOME VIEW -->
+  <div id="view-home" class="view active">
+
+    <div class="live-strip-head">
+      <div class="live-dot"></div>
+      <h2>Matchs en direct</h2>
+    </div>
+    <div class="live-scroll">
+
+      <div class="match-card">
+        <div class="comp"><span>Liga · J7</span><span class="live-badge">● LIVE</span></div>
+        <div class="team-row"><div class="team"><div class="crest">RMA</div>Real Madrid</div><div class="score">1</div></div>
+        <div class="team-row"><div class="team"><div class="crest">BAR</div>Barcelona</div><div class="score">0</div></div>
+        <div class="match-meta"><span class="minute">27'</span><span>Santiago Bernabéu</span></div>
+        <div class="event-line">⚽ 27' — But de Mbappé</div>
+      </div>
+
+      <div class="match-card">
+        <div class="comp"><span>Premier League · J6</span><span class="live-badge">● LIVE</span></div>
+        <div class="team-row"><div class="team"><div class="crest">ARS</div>Arsenal</div><div class="score">2</div></div>
+        <div class="team-row"><div class="team"><div class="crest">LIV</div>Liverpool</div><div class="score">2</div></div>
+        <div class="match-meta"><span class="minute">78'</span><span>Emirates Stadium</span></div>
+        <div class="event-line">🟨 65' — Carton jaune, Salah</div>
+      </div>
+
+      <div class="match-card">
+        <div class="comp"><span>Ligue 1 · J7</span><span class="live-badge">● LIVE</span></div>
+        <div class="team-row"><div class="team"><div class="crest">PSG</div>PSG</div><div class="score">3</div></div>
+        <div class="team-row"><div class="team"><div class="crest">OM</div>Marseille</div><div class="score">1</div></div>
+        <div class="match-meta"><span class="minute">MT</span><span>Parc des Princes</span></div>
+        <div class="event-line">⏸️ Mi-temps</div>
+      </div>
+
+      <div class="match-card">
+        <div class="comp"><span>CAN Qualif.</span><span class="live-badge">● LIVE</span></div>
+        <div class="team-row"><div class="team"><div class="crest">SEN</div>Sénégal</div><div class="score">0</div></div>
+        <div class="team-row"><div class="team"><div class="crest">MAR</div>Maroc</div><div class="score">0</div></div>
+        <div class="match-meta"><span class="minute">12'</span><span>Dakar</span></div>
+        <div class="event-line">🟢 Début du match</div>
+      </div>
+
+    </div>
+
+    <div class="section-head">
+      <h2>Actualités</h2>
+      <span class="see-all">Tout voir</span>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active">Tout</div>
+      <div class="tab">Mercato</div>
+      <div class="tab">Blessures</div>
+      <div class="tab">Football africain</div>
+      <div class="tab">Ligue des champions</div>
+    </div>
+
+    <div class="news-grid">
+
+      <div class="news-card">
+        <div class="news-thumb">🔄</div>
+        <div class="news-body">
+          <div class="news-cat">Mercato</div>
+          <div class="news-title">Un club de Premier League prépare une offre pour un milieu de terrain de Ligue 1</div>
+          <div class="news-foot"><span>Il y a 12 min</span><span class="verif-badge verif-pending">À confirmer</span></div>
+        </div>
+      </div>
+
+      <div class="news-card">
+        <div class="news-thumb">🚑</div>
+        <div class="news-body">
+          <div class="news-cat">Blessures</div>
+          <div class="news-title">Un défenseur central absent plusieurs semaines après un examen médical</div>
+          <div class="news-foot"><span>Il y a 40 min</span><span class="verif-badge verif-confirmed">Confirmé</span></div>
+        </div>
+      </div>
+
+      <div class="news-card">
+        <div class="news-thumb">🎙️</div>
+        <div class="news-body">
+          <div class="news-cat">Déclarations</div>
+          <div class="news-title">L'entraîneur réagit après le nul concédé en championnat ce week-end</div>
+          <div class="news-foot"><span>Il y a 1 h</span><span class="verif-badge verif-confirmed">Confirmé</span></div>
+        </div>
+      </div>
+
+      <div class="news-card">
+        <div class="news-thumb">🌍</div>
+        <div class="news-body">
+          <div class="news-cat">Football africain</div>
+          <div class="news-title">Le calendrier des qualifications continentales dévoilé pour la prochaine phase</div>
+          <div class="news-foot"><span>Il y a 2 h</span><span class="verif-badge verif-confirmed">Confirmé</span></div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- DASHBOARD VIEW -->
+  <div id="view-dashboard" class="view">
+
+    <div class="section-head" style="margin-top:8px">
+      <h2>Vue générale</h2>
+    </div>
+
+    <div class="dash-grid">
+      <div class="stat-card"><div class="num">18</div><div class="label">Publications aujourd'hui</div></div>
+      <div class="stat-card"><div class="num">64</div><div class="label">Actualités récupérées</div></div>
+      <div class="stat-card"><div class="num">31</div><div class="label">Événements détectés</div></div>
+      <div class="stat-card"><div class="num">4</div><div class="label">Matchs en direct</div></div>
+    </div>
+
+    <div class="ai-panel">
+      <div class="ai-panel-head">
+        <div class="ai-icon">AI</div>
+        <h3>Génération de publication</h3>
+      </div>
+      <div class="ai-source">Real Madrid 1–0 Barcelona · 27' · Buteur : Kylian Mbappé · Source : donnée fournisseur vérifiée</div>
+      <div class="ai-output">🔥 BUT DU REAL MADRID !
+
+⚽ 27' — Kylian Mbappé ouvre le score !
+
+🇪🇸 Real Madrid 1️⃣-0️⃣ Barcelona
+
+Le match continue...
+
+#RealMadrid #Barcelona #Football #Liga</div>
+      <div class="ai-actions">
+        <button class="btn primary">✅ Approuver</button>
+        <button class="btn">✏️ Modifier</button>
+        <button class="btn ghost">❌ Refuser</button>
+      </div>
+    </div>
+
+    <div class="section-head">
+      <h2>File de publication</h2>
+    </div>
+
+    <div class="queue-row"><span>🟥 Carton rouge — Sénégal vs Maroc</span><span class="queue-status status-wait">En attente</span></div>
+    <div class="queue-row"><span>🏁 Fin du match — PSG 3-1 OM</span><span class="queue-status status-ready">Prêt</span></div>
+    <div class="queue-row"><span>📰 Actualité mercato — à confirmer</span><span class="queue-status status-wait">Bloqué (source unique)</span></div>
+
+  </div>
+
+</main>
+
+<nav class="mobile-nav">
+  <button class="nav-item active" data-view="home" onclick="showView('home', this)"><span class="nav-icon">🏠</span>Accueil</button>
+  <button class="nav-item" onclick="showView('home', this)"><span class="nav-icon">🔴</span>Live</button>
+  <button class="nav-item" onclick="showView('home', this)"><span class="nav-icon">📰</span>News</button>
+  <button class="nav-item" data-view="dashboard" onclick="showView('dashboard', this)"><span class="nav-icon">🤖</span>IA</button>
+  <button class="nav-item" onclick="showView('home', this)"><span class="nav-icon">⚙️</span>Réglages</button>
+</nav>
+
+<script>
+  function showView(name, el) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById('view-' + name).classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    if (el) el.classList.add('active');
+    else document.querySelector('.nav-item[data-view="' + name + '"]')?.classList.add('active');
+    window.scrollTo(0,0);
+  }
+  document.querySelectorAll('.tab').forEach(t => {
+    t.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+      t.classList.add('active');
+    });
+  });
+</script>
+
+</body>
+</html>
